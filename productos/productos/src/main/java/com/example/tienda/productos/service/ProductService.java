@@ -28,7 +28,7 @@ public class ProductService {
 
     //optional evita que se rompa la aplicacion si no encuentra el id, en vez de eso devuelve un objeto vacio
     //puedes encontrar un producto o no, si no te devuelve un objecto de tipo opcional
-    public Optional<Product> getById(Long id){
+    public Optional<Product> FindById(Long id){
         return repo.findById(id);
     }
 

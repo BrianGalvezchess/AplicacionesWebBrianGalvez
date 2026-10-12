@@ -4,8 +4,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Positive;
 
-//va a hacer una clase que cvoy a mapear en mi base de datos, por eso se pone la anotación @Entity
+//va a hacer una clase que voy a mapear en mi base de datos, por eso se pone la anotación @Entity
 @Entity
 @Table(name = "products") // Especifica explícitamente el nombre de la tabla
 public class Product {
@@ -17,7 +18,8 @@ public class Product {
     private Long id;
     private String name;
     private int stock;
-    private double price;
+    @Positive
+    private Double price;
 
     
     public Product(Long id, String name, int stock, double price) {
