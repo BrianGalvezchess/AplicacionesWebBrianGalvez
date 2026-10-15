@@ -81,9 +81,19 @@ public class ProductController {
     }
 
     // Mapeo a Response DTO
-    private ProductResponse toResponse(Product product) {//tipo de dato Long
-        return new ProductResponse(product.getId(), product.getName(), product.getPrice(), product.getStock(),0L,"");
-    }
+    private ProductResponse toResponse(Product product) {
+    Long categoryId = product.getCategory() != null ? product.getCategory().getId() : null;
+    String categoryName = product.getCategory() != null ? product.getCategory().getName() : "";
+    
+    return new ProductResponse(
+        product.getId(), 
+        product.getName(), 
+        product.getPrice(), 
+        product.getStock(), 
+        categoryId, 
+        categoryName
+    );
+}
 
     private Product toEntity(ProductRequest request) {
         Product product = new Product();
