@@ -56,7 +56,7 @@ public class ProductController {
     // Crear (@Valid maneja automáticamente si el nombre viene vacío o nulo)
     @PostMapping()
     public ResponseEntity<ProductResponse> save(@Valid @RequestBody ProductRequest product) {
-        Product productSaved = service.save(toEntity(product));
+        Product productSaved = service.save( toEntity(product),product.categoryId());
         return ResponseEntity.status(HttpStatus.CREATED).body(toResponse(productSaved));
     }
 
@@ -81,8 +81,8 @@ public class ProductController {
     }
 
     // Mapeo a Response DTO
-    private ProductResponse toResponse(Product product) {
-        return new ProductResponse(product.getId(), product.getName(), product.getPrice(), product.getStock());
+    private ProductResponse toResponse(Product product) {//tipo de dato Long
+        return new ProductResponse(product.getId(), product.getName(), product.getPrice(), product.getStock(),0L,"");
     }
 
     private Product toEntity(ProductRequest request) {
@@ -93,6 +93,8 @@ public class ProductController {
         return product;
     }
 }
+
+//el proceso sera diferente tenemos que aseugrarno que exista esa ccategoria para guardar
 
 //DESACOMPLAMIENTO
     //LAS CLASES NO ESTAN PARCIALMENTE RELACIONADAS
