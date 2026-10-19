@@ -5,7 +5,9 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
+import com.example.tienda.dto.StockRequest;
 import com.example.tienda.exception.ResourceNotFoundException;
+import com.example.tienda.exception.StockConflictException;
 import com.example.tienda.productos.Category;
 import com.example.tienda.productos.Product;
 import com.example.tienda.repository.CategoryRepository;
@@ -76,6 +78,29 @@ public class ProductService {
 
         // Retornamos directamente la entidad guardada
         return repo.save(productDb);
+    }
+
+    public Product updateStock(Long id, StockRequest stockRequest) {
+        Product product = repo.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + id));
+
+        String operation = stockRequest.getOperation().toLowerCase();
+
+        if (operation.equals("remove") || operation.equals("remote")) {
+            if (product.getStock() < stockRequest.getQuantity()) {
+                throw new StockConflictException(
+                    "No hay suficientes productos en stock. Stock actual: " 
+                    + product.getStock() + ", solicitado a remover: " + stockRequest.getQuantity()
+                );
+            }
+            product.setStock(product.getStock() - stockRequest.getQuantity());
+        } else if (operation.equals("add")) {
+            product.setStock(product.getStock() + stockRequest.getQuantity());
+        } else {
+            throw new StockConflictException("la alabra clave no es válida: " + stockRequest.getOperation());
+        }
+
+        return repo.save(product);
     }
 
     public boolean delete(Long id){

@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.tienda.dto.ProductRequest;
 import com.example.tienda.dto.ProductResponse;
+import com.example.tienda.dto.StockRequest;
 import com.example.tienda.productos.Product;
 import com.example.tienda.productos.service.ProductService;
 
@@ -60,6 +62,14 @@ public class ProductController {
         return ResponseEntity.status(HttpStatus.CREATED).body(toResponse(productSaved));
     }
 
+    @PatchMapping("/{id}/stock")
+    public ResponseEntity<Product> updateStock(
+            @PathVariable Long id,
+            @Valid @RequestBody StockRequest stockRequest) {
+        Product updatedProduct = service.updateStock(id, stockRequest);
+        return ResponseEntity.ok(updatedProduct);
+    }
+
     // Eliminar un producto por su id
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
@@ -75,7 +85,7 @@ public class ProductController {
     public ResponseEntity<ProductResponse> update(@PathVariable Long id, @Valid @RequestBody ProductRequest product) {
     Product updatedProduct = service.update(id, toEntity(product), product.categoryId());
     return ResponseEntity.ok(toResponse(updatedProduct));
-    
+
     }
 
     // Mapeo a Response DTO
