@@ -73,11 +73,9 @@ public class ProductController {
     // Actualizar el producto por su id
     @PutMapping("/{id}")
     public ResponseEntity<ProductResponse> update(@PathVariable Long id, @Valid @RequestBody ProductRequest product) {
-        Optional<Product> optional = service.update(id, toEntity(product));
-        if (optional.isPresent()) {
-            return ResponseEntity.status(HttpStatus.CREATED).body(toResponse(optional.get()));
-        } 
-        return ResponseEntity.notFound().build();
+    Product updatedProduct = service.update(id, toEntity(product), product.categoryId());
+    return ResponseEntity.ok(toResponse(updatedProduct));
+    
     }
 
     // Mapeo a Response DTO

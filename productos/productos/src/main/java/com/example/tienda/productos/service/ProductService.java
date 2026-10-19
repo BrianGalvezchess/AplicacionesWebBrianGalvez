@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
+import com.example.tienda.exception.ResourceNotFoundException;
 import com.example.tienda.productos.Category;
 import com.example.tienda.productos.Product;
 import com.example.tienda.repository.CategoryRepository;
@@ -42,7 +43,14 @@ public class ProductService {
 
     //si es presente pasa y si no pasa la excepcion
     public Product save(Product product, Long categoryId){
-        Category category = repoCategory.findById(categoryId).orElseThrow();
+        Category category = repoCategory.
+        findById(categoryId).
+        orElseThrow(
+            ()->
+            new ResourceNotFoundException("Category not found with id:"
+                + categoryId)
+        );
+        //entonces arroja un error, evitando que el producto se cree
         product.setCategory(category);
         return repo.save(product);
     }
@@ -50,16 +58,24 @@ public class ProductService {
     //sacar el id dentro de la entidad del producto o 
 
     //opcional.of se convertirlo opcional a lo que guarda, regresa un objecto o mas bien una entidad y esa entidad devuelve un optional
-    public Optional<Product> update(Long id, Product product){
-        Optional<Product> optional = repo.findById(id);
-        if(optional.isEmpty()){
-            return optional.empty();
-        }
-        Product productDb = optional.get();
+    // Actualizar producto validando que existan TANTO el producto COMO la categoría
+    public Product update(Long id, Product product, Long categoryId){
+        // 1. Verificar si el producto existe, si no -> excepción personalizada
+        Product productDb = repo.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + id));
+
+        // 2. Verificar si la categoría existe, si no -> excepción personalizada
+        Category category = repoCategory.findById(categoryId)
+            .orElseThrow(() -> new ResourceNotFoundException("Category not found with id: " + categoryId));
+
+        // 3. Actualizar campos
         productDb.setName(product.getName());
         productDb.setPrice(product.getPrice());
         productDb.setStock(product.getStock());
-        return Optional.of(repo.save(productDb));
+        productDb.setCategory(category);
+
+        // Retornamos directamente la entidad guardada
+        return repo.save(productDb);
     }
 
     public boolean delete(Long id){
