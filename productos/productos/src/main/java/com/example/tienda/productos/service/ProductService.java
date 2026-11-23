@@ -97,7 +97,7 @@ public class ProductService {
         } else if (operation.equals("add")) {
             product.setStock(product.getStock() + stockRequest.getQuantity());
         } else {
-            throw new StockConflictException("la alabra clave no es válida: " + stockRequest.getOperation());
+            throw new StockConflictException("la palabra clave no es válida: " + stockRequest.getOperation());
         }
 
         return repo.save(product);
